@@ -3,44 +3,84 @@
 You can create a local environment by using Vagrant. 
 The document below describes pre-requisites for ILKE local environment and how you can start using them.
 
+
 ## Pre-requisites
 
-* Vagrant
-* VirtualBox
+* [Vagrant](https://www.vagrantup.com/downloads)
+* [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
 
 ## Environment customization
 
 We use Vagrant and VirtualBox to deploy local environments.
 
-Test environments are located in [labs](./labs) folder
+Test environments are located in [labs](./labs) folder which contains a set of sub-folders for each configuration you may want to implement. Feel free to customize VagrantFiles according to your need !
 
-This [labs](./labs) folder contains a set of sub-folders for each configuration you may want to implement. Feel free to customize VagrantFiles according to your need !
-    
 
 ## Start the environment
 
-1) Simply open a terminal and goto [labs/XX](./labs) folder where XX is the configuration you went to deploy.
+1) Simply open a terminal and go to [labs/multi-nodes](https://github.com/ilkilabs/ilke/tree/master/labs/multi-nodes) or [labs/all-in-one](https://github.com/ilkilabs/ilke/tree/master/labs/all-in-one) folder depending on the configuration you want to deploy.
 
-2) Once you are located on the folder that contains your file "Vagrantfile", run the command:
+
+2) Once you are located on the folder that contains your file "Vagrantfile", run the command :
 
 `vagrant up`
 
-3) Once ILKE installation is finished, a kubeconfig file ("config") is generated next to your Vagrantfile. You can use this file to manage your Kubernetes installation with [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/), or you can connect to the deploy machine with the following command:
 
-`vagrant ssh deploy`
+3) Once ILKE installation is finished, a kubeconfig file ("config") is generated next to your Vagrantfile. You can use this file to manage your Kubernetes installation with [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/), or you can connect to the deploy machine with the following command :
 
-4) Kubernetes CLI "kubectl" is configured for root user, so use the following command to become root:
+`vagrant ssh deploy` (all-in-one configuration)
+
+`vagrant ssh worker1` (multi-nodes configuration)
+
+
+4) Kubernetes CLI "kubectl" is configured for root user, so use the following command to become root :
 
 `sudo su`
 
-5) You can now enjoy your ILKE/K8S fresh cluster ! Use the following command to print K8S version:
+
+5) You can now enjoy your ILKE/K8S fresh cluster ! Use the following command to print K8S version :
 
 `kubectl version`
 
-6) IF you want to stop your kubernetes cluster, juste go to your Vagrantfile folder and run:
 
-`vagrant halt -f`     You can also start again your K8S cluster with ```vagrant up```
+6) If you want to stop your kubernetes cluster, juste go to your Vagrantfile folder and run :
 
-7) If you want to destroy your local cluster, just run:
+
+`vagrant halt -f`     
+
+You can also start again your K8S cluster with `vagrant up`. If after the "vagrant up" command, the machines do not want to start, simply start them manually on VirtualBox.
+
+
+7) If you want to destroy your local cluster, just run :
 
 `vagrant destroy -f` 
+
+
+## Best practices
+
+If you want to test your branch in the local environment, be sure to follow these tips :
+
+1) Create a test folder in which you will clone your branch :
+
+`mkdir test`
+
+`cd test`
+
+`git clone https://github.com/repo/ilke.git -b test-branch`
+
+
+2) Copy the "hosts.yaml" file to your branch :
+
+`cp ilke/hosts test/ilke/hosts`
+
+Feel free to copy the "all.yaml" file to your branch according to your need with :
+
+`cp ilke/group_var/all.yaml test/ilke/group_vars/all.yaml`
+
+
+3) You are now ready to test :
+
+`source /usr/local/ilke-env/bin/activate`
+
+`ansible-playbook ilke.yaml`
